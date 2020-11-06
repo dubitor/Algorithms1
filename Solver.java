@@ -9,7 +9,6 @@ import java.util.Comparator;
 // --- apparently doesn't find quickest solution for some reason...
 public class Solver {
 
-    private final int moves;
     private SearchNode min;
     private final SearchNode solved;
     private LinkedList<Board> solution;
@@ -24,11 +23,9 @@ public class Solver {
         min = new SearchNode(initial);
 
         if (isSolvable()) {
-            this.moves = min.moves;
             this.solved = min;
         }
         else {
-            this.moves = -1;
             this.solved = null;
         }
     }
@@ -51,7 +48,7 @@ public class Solver {
         twinPQ.insert(twin);
 
         while (!min.board.isGoal()) {
-            if (min.isTwin()) {
+            if (min.isTwin) {
                 nextStep(minPQ);
             }
             else {
@@ -59,7 +56,7 @@ public class Solver {
             }
         }
 
-        if (min.isTwin()) {
+        if (min.isTwin) {
             return false;
         }
         return true;
@@ -67,7 +64,10 @@ public class Solver {
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return this.moves;
+        if (solved == null) { // not solvable
+            return -1;
+        }
+        return min.moves;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
@@ -96,7 +96,7 @@ public class Solver {
         min = thisPQ.delMin();
         for (Board neighbour : min.board.neighbors()) {
             if (min.previous == null || neighbour != min.previous.board) { // critical optimisation
-                thisPQ.insert(new SearchNode(neighbour, min.moves + 1, min));
+                thisPQ.insert(new SearchNode(neighbour, min));
             }
         }
     }
@@ -110,13 +110,13 @@ public class Solver {
         private final SearchNode previous;
         private final boolean isTwin;
 
-        private SearchNode(Board board, int moves, SearchNode previous) {
+        private SearchNode(Board board, SearchNode previous) {
             this.board = board;
-            this.moves = moves;
             this.manhattan = board.manhattan();
-            this.manhattanPriority = moves + manhattan;
             this.previous = previous;
-            this.isTwin = this.previous.isTwin();
+            this.moves = previous.moves + 1;
+            this.manhattanPriority = moves + manhattan;
+            this.isTwin = this.previous.isTwin;
         }
 
         // overloaded constructor for first node
@@ -130,7 +130,7 @@ public class Solver {
             this.isTwin = false;
         }
 
-        // overloaded constructor for twin node
+        // overloaded constructor for first twin node
         private SearchNode(Board board, String twin) {
             this.board = board;
             this.moves = 0;
@@ -138,10 +138,6 @@ public class Solver {
             this.manhattanPriority = moves + manhattan;
             this.previous = null;
             this.isTwin = true;
-        }
-
-        private boolean isTwin() {
-            return isTwin;
         }
 
         private Comparator<SearchNode> getComparator() {
