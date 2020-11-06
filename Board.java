@@ -1,8 +1,8 @@
 import java.util.Stack;
-import java.util.Scanner;
+//import java.util.Scanner;
 import java.util.Arrays;
-import java.io.File;
-import java.io.FileNotFoundException;
+//import java.io.File;
+//import java.io.FileNotFoundException; -- see main() comments
 public class Board {
 
     private final int[][] tiles;
@@ -19,7 +19,7 @@ public class Board {
             throw new IllegalArgumentException("n must be in range [2, 128)");
         }
         this.n = tiles.length;
-        this.tiles = Arrays.copyOf(tiles, n);
+        this.tiles = getTilesCopy(tiles);
     }
                                            
     // string representation of this board
@@ -229,8 +229,16 @@ public class Board {
     }
 
     // an independent copy of this board's tiles array
-    // --- is the copy independent? debug with assertNotSame
     private int[][] getTilesCopy() {
+        int[][] tilesCopy = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            tilesCopy[i] = Arrays.copyOf(tiles[i], n);
+        }
+        return tilesCopy;
+    }
+
+    // an independent copy of the input's tiles array
+    private int[][] getTilesCopy(int[][] tiles) {
         int[][] tilesCopy = new int[n][n];
         for (int i = 0; i < n; i++) {
             tilesCopy[i] = Arrays.copyOf(tiles[i], n);
@@ -274,7 +282,7 @@ public class Board {
         return Math.abs(row - (tiles[row][col] - 1 )/ n);
     }
 
-    // unit testing (not graded)
+    // unit testing (not graded) --- commented out because the grader fails dependencies on certain libraries
 /*    public static void main(String[] args) throws FileNotFoundException {
 
         Scanner sc = new Scanner(new File(args[0]));
