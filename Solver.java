@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.Comparator;
 
 
-// TO DO:
-// --- apparently doesn't find quickest solution for some reason...
 public class Solver {
 
     private SearchNode min;
@@ -95,7 +93,7 @@ public class Solver {
         
         min = thisPQ.delMin();
         for (Board neighbour : min.board.neighbors()) {
-            if (min.previous == null || neighbour != min.previous.board) { // critical optimisation
+            if (min.previous == null || (!neighbour.equals(min.previous.board))) { // critical optimisation
                 thisPQ.insert(new SearchNode(neighbour, min));
             }
         }
