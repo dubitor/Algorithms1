@@ -152,7 +152,7 @@ public class Solver {
                 if (s1.manhattanPriority > s2.manhattanPriority) {
                     return 1;
                 }
-                else if (s1.manhattanPriority > s2.manhattanPriority) {
+                else if (s1.manhattanPriority < s2.manhattanPriority) {
                     return -1;
                 }
                 else { // breaking ties by manhattan distance
@@ -162,10 +162,8 @@ public class Solver {
                     else if (s1.manhattan < s2.manhattan) {
                         return -1;
                     }
-                    else {
-                        return 0;
-                    }
                 }
+                return 0;
             }
         }
     }
