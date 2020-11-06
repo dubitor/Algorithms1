@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 public class Board {
 
-    private final int[][] TILES;
-    private final int N;
+    private final int[][] tiles;
+    private final int n;
     private int[] blank; // location of blank square -- could this be local to neighbors() method?
 
     // create a board from an n-by-n array of tiles,
@@ -18,17 +18,17 @@ public class Board {
         if (tiles.length < 2 || tiles.length >= 128) {
             throw new IllegalArgumentException("n must be in range [2, 128)");
         }
-        this.N = tiles.length;
-        this.TILES = tiles;
+        this.n = tiles.length;
+        this.tiles = Arrays.copyOf(tiles, n);
     }
                                            
     // string representation of this board
     public String toString() {
         StringBuilder s = new StringBuilder();
-            s.append(N + "\n");
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    s.append(String.format("%2d ", TILES[i][j]));
+            s.append(n + "\n");
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    s.append(String.format("%2d ", tiles[i][j]));
                 }
                 s.append("\n");
             }
@@ -37,7 +37,7 @@ public class Board {
 
     // board dimension n
     public int dimension() {
-        return N;
+        return n;
     }
 
     // number of tiles out of place
@@ -45,9 +45,9 @@ public class Board {
 
         int ham = 0;
 
-        for (int row = 0; row < N; row++) {
-            for (int col = 0; col < N; col++) {
-                if (TILES[row][col] == 0) { ; }// if it's the blank space we don't care
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (tiles[row][col] == 0) { ; }// if it's the blank space we don't care
                 else if (!tileInPlace(row, col)) {
                    ham++;
                 }
@@ -61,9 +61,9 @@ public class Board {
     public int manhattan() {
 
         int man = 0;
-        for (int row = 0; row < N; row++) {
-            for (int col = 0; col < N; col++) {
-                if (TILES[row][col] != 0) { // we don't want to calculate for the blank tile
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (tiles[row][col] != 0) { // we don't want to calculate for the blank tile
                     int vDist = verticalDistance(row, col); 
                     int hDist = horizontalDistance(row, col); 
                     man += vDist + hDist;
@@ -96,10 +96,10 @@ public class Board {
 
         Board that = (Board) y; // guaranteed to succeed because of previous condition
 
-        if (this.N != that.N) {
+        if (this.n != that.n) {
             return false;
         }
-        return Arrays.deepEquals(this.TILES, that.TILES);
+        return Arrays.deepEquals(this.tiles, that.tiles);
     }
 
 
@@ -118,7 +118,7 @@ public class Board {
                 neighbors.push(makeNeighbor("down"));
                 return neighbors;
             }
-            if (blank[1] == N - 1) { // blank's in bottom left corner
+            if (blank[1] == n - 1) { // blank's in bottom left corner
                 neighbors.push(makeNeighbor("up"));
                 return neighbors;
             }
@@ -126,13 +126,13 @@ public class Board {
             neighbors.push(makeNeighbor("down"));
             return neighbors;
         }
-        else if (blank[0] == N - 1) { // blank's in last column
+        else if (blank[0] == n - 1) { // blank's in last column
             neighbors.push(makeNeighbor("left"));
             if (blank[1] == 0) { // blank's in top right corner
                 neighbors.push(makeNeighbor("down"));
                 return neighbors;
             }
-            if (blank[1] == N - 1) { // blank's in bottom right corner
+            if (blank[1] == n - 1) { // blank's in bottom right corner
                 neighbors.push(makeNeighbor("up"));
                 return neighbors;
             }
@@ -146,7 +146,7 @@ public class Board {
             neighbors.push(makeNeighbor("down"));
             return neighbors;
         }
-        else if (blank[1] == N - 1) { // blank's somewhere in the middle of last row
+        else if (blank[1] == n - 1) { // blank's somewhere in the middle of last row
             neighbors.push(makeNeighbor("left"));
             neighbors.push(makeNeighbor("right"));
             neighbors.push(makeNeighbor("up"));
@@ -166,10 +166,10 @@ public class Board {
     // a board that is obtained by exchanging any pair of tiles
     // (the blank is not a tile)
     public Board twin() {
-        if (TILES[0][0] == 0) {
+        if (tiles[0][0] == 0) {
             return twin(0, 1, 1, 1);
         }
-        if (TILES[0][1] == 0) {
+        if (tiles[0][1] == 0) {
             return twin(0, 0, 1, 0);
         }
         return twin(0, 0, 0, 1);
@@ -190,19 +190,19 @@ public class Board {
     private Board makeNeighbor(String direction) {
         int[][] tilesCopy = getTilesCopy();
 
-        if (direction == "up") {
+        if (direction.equals("up")) {
             tilesCopy[blank[0]][blank[1]] = tilesCopy[blank[0]][blank[1] - 1];
             tilesCopy[blank[0]][blank[1] - 1] = 0;
         }
-        else if (direction == "down") {
+        else if (direction.equals("down")) {
             tilesCopy[blank[0]][blank[1]] = tilesCopy[blank[0]][blank[1] + 1];
             tilesCopy[blank[0]][blank[1] + 1] = 0;
         }
-        else if (direction == "left") {
+        else if (direction.equals("left")) {
             tilesCopy[blank[0]][blank[1]] = tilesCopy[blank[0] - 1][blank[1]];
             tilesCopy[blank[0] - 1][blank[1]] = 0;
         }
-        else if (direction == "right") {
+        else if (direction.equals("right")) {
             tilesCopy[blank[0]][blank[1]] = tilesCopy[blank[0] + 1][blank[1]];
             tilesCopy[blank[0] + 1][blank[1]] = 0;
         }
@@ -215,11 +215,11 @@ public class Board {
 
 
     // the coordinates of the blank square
-    // i.e. [row, col] where TILES[row][col] is blank
+    // i.e. [row, col] where tiles[row][col] is blank
     private void findBlank() {
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (TILES[i][j] == 0) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (tiles[i][j] == 0) {
                     this.blank = new int[] { i, j };
                     return;
                 }
@@ -231,47 +231,47 @@ public class Board {
     // an independent copy of this board's tiles array
     // --- is the copy independent? debug with assertNotSame
     private int[][] getTilesCopy() {
-        int[][] tilesCopy = new int[N][N];
-        for (int i = 0; i < N; i++) {
-            tilesCopy[i] = Arrays.copyOf(TILES[i], N);
+        int[][] tilesCopy = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            tilesCopy[i] = Arrays.copyOf(tiles[i], n);
         }
         return tilesCopy;
     }
 
-    // returns true if TILES[x][y] is in the right place
+    // returns true if tiles[x][y] is in the right place
     // the blank space should NOT be passed to this method
     // 0-indexed array, so each square should equal x*N+y+1
     // ---> (0,0) = 1, (1,0) = N+1...
     // except the last square which should be 0
     private boolean tileInPlace(int row, int col) {
-        return TILES[row][col] == row * N + col + 1 && !isLastSquare(row, col);
+        return tiles[row][col] == row * n + col + 1 && !isLastSquare(row, col);
     }
 
-    // returns true if TILES[x][y] is the last square     
+    // returns true if tiles[x][y] is the last square     
     private boolean isLastSquare(int row, int col) {
-        return row == N - 1 && col == N - 1;
+        return row == n - 1 && col == n - 1;
     }
 
     // number of columns away from goal column (i.e. goal col)
-    // the goal column index is TILES[row][col] % N - 1
+    // the goal column index is tiles[row][col] % N - 1
     private int horizontalDistance(int row, int col) {
-        int val = TILES[row][col];
-        if (val % N == 0) { // tile should be in last column
-            return (N - 1) - col;
+        int val = tiles[row][col];
+        if (val % n == 0) { // tile should be in last column
+            return (n - 1) - col;
         }
-        return Math.abs(col - (val % N - 1));
+        return Math.abs(col - (val % n - 1));
     }
 
 
     // number of rows away from goal row (i.e. goal row)
     // the goal row index of a given value is calculated
-    // by floor dividing that value by N
+    // by floor dividing that value by n
     // I've trid to do some sneakiness to overcome the fact
     // that if the tile's goal column is the last it is difficult
     // to calculate the goal row (hence the - 1)
-    // n.b. assumes TILES[row][col] != 0
+    // n.b. assumes tiles[row][col] != 0
     private int verticalDistance(int row, int col) {
-        return Math.abs(row - (TILES[row][col] - 1 )/ N);
+        return Math.abs(row - (tiles[row][col] - 1 )/ n);
     }
 
     // unit testing (not graded)
@@ -288,7 +288,7 @@ public class Board {
         }
 
         Board b = new Board(tiles);
-        System.out.printf("\nN = %d", b.dimension());
+        System.out.printf("\nn = %d", b.dimension());
         System.out.printf("\n%s", b.toString());
         System.out.printf("\nhamming: %d   manhattan: %d", b.hamming(), b.manhattan());
         System.out.printf("\nis goal? %b", b.isGoal());
