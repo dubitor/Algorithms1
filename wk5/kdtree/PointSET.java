@@ -78,7 +78,7 @@ public class PointSET {
         Point2D champion = bst.first();
 
         for (Point2D challenger : bst) {
-            if (challenger.distanceTo(p) < champion.distanceTo(p)) {
+            if (challenger.distanceSquaredTo(p) < champion.distanceSquaredTo(p)) {
                 champion = challenger;
             }
         }

@@ -74,12 +74,12 @@ public class KdTree {
     public boolean contains(Point2D p) {
         if (p == null) { throw new IllegalArgumentException("Argument cannot be null"); }
 
-        return containsHori(root, p);
+        return containsVert(root, p);
     }
 
     // searches the tree for p, using x coords as key
-    // (odd levels)
-    private boolean containsHori(Node node, Point2D p) {
+    // (vertical partition: odd levels)
+    private boolean containsVert(Node node, Point2D p) {
         if (node == null) {
             return false;
         }
@@ -87,16 +87,16 @@ public class KdTree {
             return true;
         }
         if (p.x() < node.x()) {
-            return containsVert(node.lb, p);
+            return containsHori(node.lb, p);
         }
         else {
-            return containsVert(node.rt, p);
+            return containsHori(node.rt, p);
         }
     }
 
     // searches the tree for p, using y coords as key
-    // (even levels)
-    private boolean containsVert(Node node, Point2D p) {
+    // (horizontal partition: even levels)
+    private boolean containsHori(Node node, Point2D p) {
         if (node == null) {
             return false;
         }
@@ -145,8 +145,8 @@ public class KdTree {
         StdDraw.setPenRadius();
         StdDraw.line(node.rect.xmin(), node.y(), node.rect.xmax(), node.y());
 
-        drawBlue(node.lb);
-        drawBlue(node.rt);
+        drawRed(node.lb);
+        drawRed(node.rt);
     }
 
     // all points that are inside the rectangle (or on the boundary)
@@ -173,11 +173,67 @@ public class KdTree {
     }
 
     // a nearest neighbour in the set to point p; null if the set is empty
-    // n.b. consider equidistant case
-    /*public Point2D nearest(Point2D p) {
+    //n.b. consider equidistant case
+    // hmmm....
+    public Point2D nearest(Point2D p) {
         if (p == null) { throw new IllegalArgumentException("Argument cannot be null"); }
+        if (isEmpty()) { return null; }
+
+        return nearestVert(p, root, root.p, root.rect.distanceSquaredTo(p));
     }
-    */
+
+    // vertical partition; odd levels; x coords
+    private Point2D nearestVert(Point2D p, Node current, Point2D champion, double champDist) {
+        if (current == null) { // reached end of branch
+            return champion;
+        }
+        if (current.rect.distanceSquaredTo(p) >= champDist) { // nothing in this sub.tree is closer than current champion
+            return champion;
+        }
+
+        double currentDist = current.p.distanceSquaredTo(p);
+        if (currentDist < champDist) { // found new champion
+            champion = current.p;
+            champDist = currentDist;
+        }
+
+        if (current.x() > champion.x()) { // go left first if champion to the left of current point
+            champion = nearestHori(p, current.lb, champion, champDist);
+            champion = nearestHori(p, current.rt, champion, champDist);
+        }
+        else  { // else go right
+            champion = nearestHori(p, current.rt, champion, champDist);
+            champion = nearestHori(p, current.lb, champion, champDist);
+        }
+        return champion;
+    }
+            
+    // even nodes, horizontal partiion, y coords
+    private Point2D nearestHori(Point2D p, Node current, Point2D champion, double champDist) {
+        if (current == null) { // reached end of branch
+            return champion;
+        }
+        if (current.rect.distanceSquaredTo(p) >= champDist) { // nothing in this sub.tree is closer than current champion
+            return champion;
+        }
+
+        double currentDist = current.p.distanceSquaredTo(p);
+        if (currentDist < champDist) { // found new champion
+            champion = current.p;
+            champDist = currentDist;
+        }
+
+        if (current.y() > champion.y()) { // go left first if champion below current point
+            champion = nearestHori(p, current.lb, champion, champDist);
+            champion = nearestHori(p, current.rt, champion, champDist);
+        }
+        else  { // else go right
+            champion = nearestHori(p, current.rt, champion, champDist);
+            champion = nearestHori(p, current.lb, champion, champDist);
+        }
+        return champion;
+    }
+
 
     private static class Node {
         private final Point2D p; // the point
@@ -215,8 +271,8 @@ public class KdTree {
         kd.insert(p);
         kd.insert(q);
         kd.insert(r);
-        System.out.printf("\ntree with 3 pts empty? %b size? %d", kd.isEmpty(), kd.size());
-        System.out.printf("\ncontains those three points? %b %b %b", kd.contains(p), kd.contains(q), kd.contains(r));
+        kd.insert(new Point2D(0.1, 0.23));
+        System.out.printf("\ntree with 4 pts empty? %b size? %d", kd.isEmpty(), kd.size());
         System.out.printf("\ncontains point not in it? %b\n\n", kd.contains(new Point2D(0.1, 0.1)));
 
         RectHV unitSq = new RectHV(0, 0, 1, 1);
@@ -232,6 +288,9 @@ public class KdTree {
         }
 
         kd.draw();
+        Point2D origin = new Point2D(0, 0);
+        origin.draw();
+        System.out.printf("\nnearest point to the origin is: %s\n\n", kd.nearest(origin).toString());
 
     }
 
