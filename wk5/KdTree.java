@@ -225,12 +225,12 @@ public class KdTree {
         }
 
         if (current.y() > p.y()) { // go left first if query point below current point
-            champion = nearestHori(p, current.lb, champion);
-            champion = nearestHori(p, current.rt, champion);
+            champion = nearestVert(p, current.lb, champion);
+            champion = nearestVert(p, current.rt, champion);
         }
         else  { // else go right
-            champion = nearestHori(p, current.rt, champion);
-            champion = nearestHori(p, current.lb, champion);
+            champion = nearestVert(p, current.rt, champion);
+            champion = nearestVert(p, current.lb, champion);
         }
         return champion;
     }
