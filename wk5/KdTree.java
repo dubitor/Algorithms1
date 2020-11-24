@@ -174,7 +174,7 @@ public class KdTree {
     }
 
     // a nearest neighbour in the set to point p; null if the set is empty
-    //n.b. consider equidistant case
+    // n.b. consider equidistant case
     // hmmm....
     public Point2D nearest(Point2D p) {
         if (p == null) { throw new IllegalArgumentException("Argument cannot be null"); }
@@ -198,7 +198,7 @@ public class KdTree {
             champion = current.p;
         }
 
-        if (current.x() > champion.x()) { // go left first if champion to the left of current point
+        if (current.x() > p.x()) { // go left first if query point to the left of current point
             champion = nearestHori(p, current.lb, champion);
             champion = nearestHori(p, current.rt, champion);
         }
@@ -224,7 +224,7 @@ public class KdTree {
             champion = current.p;
         }
 
-        if (current.y() > champion.y()) { // go left first if champion below current point
+        if (current.y() > p.y()) { // go left first if query point below current point
             champion = nearestHori(p, current.lb, champion);
             champion = nearestHori(p, current.rt, champion);
         }
