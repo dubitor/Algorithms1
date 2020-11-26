@@ -1,6 +1,6 @@
 ### Algorithms1
 
-# Princeton Algorithms Part 1 programming assignments
+#### Princeton Algorithms Part 1 programming assignments
 
 Coursework for Algorithms Part 1 2020, available on Coursera.
 
