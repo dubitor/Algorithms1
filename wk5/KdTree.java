@@ -174,8 +174,6 @@ public class KdTree {
     }
 
     // a nearest neighbour in the set to point p; null if the set is empty
-    // n.b. consider equidistant case
-    // hmmm....
     public Point2D nearest(Point2D p) {
         if (p == null) { throw new IllegalArgumentException("Argument cannot be null"); }
         if (isEmpty()) { return null; }
