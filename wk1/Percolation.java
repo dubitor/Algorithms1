@@ -15,9 +15,8 @@ public class Percolation {
         nSqd = n * n;
         UF = new WeightedQuickUnionUF(nSqd + 2);
         openSites = new int[nSqd + 2];
-        // open virtual top and bottom sites
-        openSites[0] = 1;
-        openSites[nSqd + 1] = 1;
+        openSites[0] = 1; // open virtual top site
+        openSites[nSqd + 1] = 1; // open virtual bottom site
     }
 
     // opens the site (row, col) if it is not open already
@@ -80,8 +79,8 @@ public class Percolation {
     private void connectToNeighbours(int row, int col) {
         connect(row, col, row, col + 1);
         connect(row, col, row, col - 1);
-        connect(row, col, row + 1, col);
         connect(row, col, row - 1, col);
+        connect(row, col, row + 1, col);
     }
 
     // connects (r1, c1) to (r2, c2) iff the latter is open and in range
@@ -89,17 +88,19 @@ public class Percolation {
     private void connect(int r1, int c1, int r2, int c2) {
         if (r2 == 0) { // top row to virtual top
             UF.union(0, gridTo1D(r1, c1));
-            return;
         }
-        if (r2 == n + 1) { // bottom row to virtual bottom
+
+        if (r2 == n + 1) { // bottom row to virtual bottom site
             UF.union(gridTo1D(r1, c1), nSqd + 1);
+        }
+
+        if (outOfRange(r2, c2) || !isOpen(r2, c2)) {
             return;
         }
-        if (outOfRange(r2, c2) || !isOpen(r2, c2)) { return; }
+
         int p = gridTo1D(r1, c1);
         int q = gridTo1D(r2, c2);
         UF.union(p, q);
-    }
 
-    // test client (optional)
+    }
 }
