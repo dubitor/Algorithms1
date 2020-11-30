@@ -1,8 +1,7 @@
 import java.util.Stack;
-//import java.util.Scanner;
 import java.util.Arrays;
-//import java.io.File;
-//import java.io.FileNotFoundException; -- see main() comments
+import edu.princeton.cs.algs4.In;
+
 public class Board {
 
     private final int[][] tiles;
@@ -282,16 +281,16 @@ public class Board {
         return Math.abs(row - (tiles[row][col] - 1 )/ n);
     }
 
-    // unit testing (not graded) --- commented out because the grader fails dependencies on certain libraries
-/*    public static void main(String[] args) throws FileNotFoundException {
+    // unit testing
+    public static void main(String[] args) {
 
-        Scanner sc = new Scanner(new File(args[0]));
-        int n = sc.nextInt();
+        In in = new In(args[0]);
+        int n = in.readInt();
         int[][] tiles = new int[n][n];
         
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j ++) {
-                tiles[i][j] = sc.nextInt();
+                tiles[i][j] = in.readInt();
             }
         }
 
@@ -313,5 +312,5 @@ public class Board {
             System.out.printf("\nis goal? %b\n", neighbor.isGoal());
             System.out.printf("\nneighbour == board? %b\n", neighbor.equals(b));
         }
-    }*/
+    }
 }
